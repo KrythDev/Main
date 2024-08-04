@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Luckverse</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
+        
         body {
             margin: 0;
             padding: 0;
@@ -16,23 +18,33 @@
             background-size: 400% 400%;
             animation: gradientAnimation 15s ease infinite;
             overflow: hidden;
+            font-family: 'Roboto', sans-serif;
         }
+
         @keyframes gradientAnimation {
             0% {background-position: 0% 50%;}
             50% {background-position: 100% 50%;}
             100% {background-position: 0% 50%;}
         }
+
         @keyframes fadeIn {
             0% {opacity: 0;}
             100% {opacity: 1;}
         }
+
         @keyframes fadeInBottom {
             0% {opacity: 0; transform: translateY(100%);}
             100% {opacity: 1; transform: translateY(0);}
         }
+
+        @keyframes fadeOutBottom {
+            0% {opacity: 1; transform: translateY(0);}
+            100% {opacity: 0; transform: translateY(100%);}
+        }
+
         .login-frame {
             width: 350px;
-            height: 250px;
+            height: 300px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 15px;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
@@ -48,6 +60,7 @@
             padding: 20px;
             box-sizing: border-box;
         }
+
         .login-frame::before {
             content: '';
             position: absolute;
@@ -61,67 +74,107 @@
             animation: gradientAnimation 15s ease infinite;
             z-index: -1;
         }
+
         .login-title {
             font-size: 2em;
             color: white;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             margin-bottom: 20px;
+            font-weight: bold;
         }
+
         .key-input-container {
-            display: flex;
-            align-items: center;
+            position: relative;
+            width: 100%;
             margin-bottom: 20px;
         }
+
         .key-input {
-            width: 200px;
+            width: calc(100% - 40px); /* Adjust for emoji width */
             padding: 10px;
             border-radius: 5px;
-            border: 1px solid rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.6);
             background: rgba(255, 255, 255, 0.2);
             color: black;
-            margin-right: 10px;
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
+            font-weight: bold;
+            padding-right: 40px;
+            box-sizing: border-box;
+            animation: borderAnimation 15s ease infinite;
         }
+
+        .key-input::placeholder {
+            color: black;
+            opacity: 0.7;
+        }
+
         .key-emoji {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
             font-size: 1.5em;
+            color: black;
         }
+
+        @keyframes borderAnimation {
+            0% { border-color: rgba(255, 216, 155, 0.6); }
+            50% { border-color: rgba(255, 114, 114, 0.6); }
+            100% { border-color: rgba(43, 217, 189, 0.6); }
+        }
+
         .login-button {
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #6ddf6d, #45a845);
-            border: 1px solid rgba(0, 0, 0, 0.3);
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(43, 217, 189, 0.8), rgba(255, 114, 114, 0.8));
+            border: 2px solid rgba(0, 0, 0, 0.3);
             border-radius: 5px;
             color: white;
             cursor: pointer;
             transition: background 0.3s ease;
+            font-weight: bold;
+            font-size: 1.2em;
+            animation: gradientAnimation 15s ease infinite;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
+
         .login-button:hover {
-            background: linear-gradient(135deg, #45a845, #6ddf6d);
+            background: linear-gradient(135deg, rgba(255, 114, 114, 0.8), rgba(43, 217, 189, 0.8));
         }
+
         .notification-frame {
             position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 10px 20px;
-            background: rgba(255, 0, 0, 0.8);
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.2);
             color: white;
-            border-radius: 5px;
+            border-radius: 10px;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             display: none;
+            font-weight: bold;
+            z-index: 1000;
             animation: fadeInBottom 0.5s forwards;
         }
+
         .notification-title {
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
         }
+
         .notification-title .emoji {
-            margin-right: 5px;
+            margin-right: 10px;
+        }
+
+        .notification-description {
+            font-weight: bold;
         }
     </style>
 </head>
@@ -203,13 +256,22 @@
             });
         }
 
+        let isNotificationVisible = false;
+
         function showNotification(message) {
+            if (isNotificationVisible) return;
+
+            isNotificationVisible = true;
             const notificationFrame = document.getElementById('notificationFrame');
             const notificationDescription = document.getElementById('notificationDescription');
             notificationDescription.textContent = message;
             notificationFrame.style.display = 'block';
+            notificationFrame.style.animation = 'fadeInBottom 0.5s forwards, fadeOutBottom 5s forwards';
+
             setTimeout(() => {
+                notificationFrame.style.animation = 'none';
                 notificationFrame.style.display = 'none';
+                isNotificationVisible = false;
             }, 5000);
         }
 

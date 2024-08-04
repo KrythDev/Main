@@ -90,8 +90,9 @@
         }
 
         .key-input {
-            width: calc(100% - 40px); /* Adjust for emoji width */
+            width: 100%;
             padding: 10px;
+            padding-right: 40px; /* Space for the emoji */
             border-radius: 5px;
             border: 2px solid rgba(255, 255, 255, 0.6);
             background: rgba(255, 255, 255, 0.2);
@@ -99,7 +100,6 @@
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
             font-weight: bold;
-            padding-right: 40px;
             box-sizing: border-box;
             animation: borderAnimation 15s ease infinite;
         }
@@ -134,7 +134,7 @@
             cursor: pointer;
             transition: background 0.3s ease;
             font-weight: bold;
-            font-size: 1.2em;
+            font-size: 1.5em;
             animation: gradientAnimation 15s ease infinite;
             box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
@@ -266,13 +266,15 @@
             const notificationDescription = document.getElementById('notificationDescription');
             notificationDescription.textContent = message;
             notificationFrame.style.display = 'block';
-            notificationFrame.style.animation = 'fadeInBottom 0.5s forwards, fadeOutBottom 5s forwards';
+            notificationFrame.style.animation = 'fadeInBottom 0.5s forwards';
 
             setTimeout(() => {
-                notificationFrame.style.animation = 'none';
-                notificationFrame.style.display = 'none';
-                isNotificationVisible = false;
-            }, 5000);
+                notificationFrame.style.animation = 'fadeOutBottom 0.5s forwards';
+                setTimeout(() => {
+                    notificationFrame.style.display = 'none';
+                    isNotificationVisible = false;
+                }, 500); // Match the duration of the fade out animation
+            }, 5000); // Show for 5 seconds
         }
 
         document.addEventListener('DOMContentLoaded', () => {

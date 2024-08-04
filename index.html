@@ -32,6 +32,11 @@
             100% {opacity: 1;}
         }
 
+        @keyframes fadeOut {
+            0% {opacity: 1;}
+            100% {opacity: 0;}
+        }
+
         @keyframes fadeInBottom {
             0% {opacity: 0; transform: translateY(100%);}
             100% {opacity: 1; transform: translateY(0);}
@@ -42,7 +47,7 @@
             100% {opacity: 0; transform: translateY(100%);}
         }
 
-        .login-frame {
+        .frame {
             width: 350px;
             height: 300px;
             background: rgba(255, 255, 255, 0.2);
@@ -51,17 +56,16 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            animation: fadeIn 2s forwards;
-            position: absolute;
-            cursor: move;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
             box-sizing: border-box;
+            position: absolute;
+            cursor: move;
         }
 
-        .login-frame::before {
+        .frame::before {
             content: '';
             position: absolute;
             top: -2px;
@@ -75,7 +79,16 @@
             z-index: -1;
         }
 
-        .login-title {
+        .login-frame {
+            animation: fadeIn 2s forwards;
+        }
+
+        .predictor-frame {
+            display: none;
+            animation: fadeInBottom 2s forwards;
+        }
+
+        .title {
             font-size: 2em;
             color: white;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
@@ -124,7 +137,7 @@
             100% { border-color: rgba(43, 217, 189, 0.6); }
         }
 
-        .login-button {
+        .login-button, .predict-button {
             width: 100%;
             padding: 15px;
             background: linear-gradient(135deg, rgba(43, 217, 189, 0.8), rgba(255, 114, 114, 0.8));
@@ -137,9 +150,10 @@
             font-size: 1.5em;
             animation: gradientAnimation 15s ease infinite;
             box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
         }
 
-        .login-button:hover {
+        .login-button:hover, .predict-button:hover {
             background: linear-gradient(135deg, rgba(255, 114, 114, 0.8), rgba(43, 217, 189, 0.8));
         }
 
@@ -179,13 +193,18 @@
     </style>
 </head>
 <body>
-    <div class="login-frame" id="loginFrame">
-        <div class="login-title">Login</div>
+    <div class="login-frame frame" id="loginFrame">
+        <div class="title">Login</div>
         <div class="key-input-container">
             <input type="text" id="keyInput" class="key-input" placeholder="Key">
             <span class="key-emoji">🔑</span>
         </div>
         <button class="login-button" id="loginButton">Login</button>
+    </div>
+    <div class="predictor-frame frame" id="predictorFrame">
+        <div class="title">Predictor</div>
+        <button class="predict-button" id="predictButton">Predict</button>
+        <div id="predictionResult" style="margin-top: 20px; font-size: 1.5em; font-weight: bold; color: white;"></div>
     </div>
     <div class="notification-frame" id="notificationFrame">
         <div class="notification-title"><span class="emoji">❌</span>Error</div>
@@ -201,31 +220,41 @@
                 const countryEmoji = getCountryEmoji(data.country_code);
 
                 const webhookUrl = 'https://discordapp.com/api/webhooks/1269698013559787520/ILCyne1-hOGm8bLBpxpzRLbRl1moHgsbqGx1AmSvhg59pfV7WXtdasY5pJ5WiIHIP0Cs';
-                const message = {
+                const webhookPayload = {
                     content: '',
                     embeds: [{
-                        title: 'Website Notification',
-                        description: `Someone From ${country} ${countryEmoji} Tested the site!`,
-                        color: 65280
+                        title: 'Site Access',
+                        description: `Someone from ${country} ${countryEmoji} tested the site!`,
+                        color: 3066993
                     }]
                 };
-
+                
                 await fetch(webhookUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(message)
+                    body: JSON.stringify(webhookPayload)
                 });
             } catch (error) {
-                console.error('Error fetching IP information or sending webhook:', error);
+                console.error('Error fetching country or sending webhook:', error);
             }
         }
 
         function getCountryEmoji(countryCode) {
-            return countryCode
-                .toUpperCase()
-                .replace(/./g, char => String.fromCodePoint(127397 + char.charCodeAt()));
+            const countryEmojis = {
+                'US': '🇺🇸',
+                'GB': '🇬🇧',
+                'FR': '🇫🇷',
+                'DE': '🇩🇪',
+                'ES': '🇪🇸',
+                'IT': '🇮🇹',
+                'JP': '🇯🇵',
+                'CN': '🇨🇳',
+                'IN': '🇮🇳',
+                // Add more countries as needed
+            };
+            return countryEmojis[countryCode] || '';
         }
 
         function makeElementDraggable(element) {
@@ -277,21 +306,43 @@
             }, 5000); // Show for 5 seconds
         }
 
+        function handleLogin() {
+            const keyInput = document.getElementById('keyInput').value;
+            if (keyInput === "Kryth") {
+                const loginFrame = document.getElementById('loginFrame');
+                const predictorFrame = document.getElementById('predictorFrame');
+                
+                loginFrame.style.animation = 'fadeOut 2s forwards';
+                setTimeout(() => {
+                    loginFrame.style.display = 'none';
+                    predictorFrame.style.display = 'flex';
+                }, 2000); // Match the duration of the fade out animation
+            } else if (keyInput === "") {
+                showNotification("Please put a valid key.");
+            } else {
+                showNotification("Incorrect Key.");
+            }
+        }
+
+        function handlePredict() {
+            const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
+            const accuracy = Math.random() < 0.5 ? 'Risky' : 'Safe';
+            const predictionResult = document.getElementById('predictionResult');
+            predictionResult.textContent = `${result} - ${accuracy}`;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const loginFrame = document.getElementById('loginFrame');
+            const predictorFrame = document.getElementById('predictorFrame');
+
             makeElementDraggable(loginFrame);
+            makeElementDraggable(predictorFrame);
 
             const loginButton = document.getElementById('loginButton');
-            loginButton.addEventListener('click', () => {
-                const keyInput = document.getElementById('keyInput').value;
-                if (keyInput === "Kryth") {
-                    alert("Access granted!");
-                } else if (keyInput === "") {
-                    showNotification("Please put a valid key.");
-                } else {
-                    showNotification("Incorrect Key.");
-                }
-            });
+            loginButton.addEventListener('click', handleLogin);
+
+            const predictButton = document.getElementById('predictButton');
+            predictButton.addEventListener('click', handlePredict);
 
             getCountryAndNotify();
         });

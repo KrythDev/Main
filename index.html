@@ -3,42 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My GitHub Pages Site</title>
+    <title>Welcome to Luckverse</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             background: linear-gradient(135deg, rgba(255, 216, 155, 0.8), rgba(255, 114, 114, 0.8), rgba(43, 217, 189, 0.8));
             background-size: 400% 400%;
             animation: gradientAnimation 15s ease infinite;
+            overflow: hidden;
         }
         @keyframes gradientAnimation {
             0% {background-position: 0% 50%;}
             50% {background-position: 100% 50%;}
             100% {background-position: 0% 50%;}
         }
+        @keyframes fadeIn {
+            0% {opacity: 0;}
+            100% {opacity: 1;}
+        }
+        @keyframes fadeOut {
+            0% {opacity: 1;}
+            100% {opacity: 0;}
+        }
+        .welcome-text {
+            font-size: 3em;
+            color: white;
+            text-shadow: 2px 2px 4px black;
+            opacity: 0;
+            animation: fadeIn 2s forwards, fadeOut 2s 5s forwards;
+        }
+        .gold-gradient {
+            background: linear-gradient(to right, #ffd700, #ffac00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
     </style>
 </head>
 <body>
+    <div class="welcome-text">
+        Welcome to <span class="gold-gradient">Luckverse</span>
+    </div>
     <script>
         async function getCountryAndNotify() {
             try {
-                // Fetch user's IP information
                 const response = await fetch('https://ipapi.co/json/');
                 const data = await response.json();
                 
                 const country = data.country_name;
                 const countryEmoji = getCountryEmoji(data.country_code);
 
-                // Send a notification to the Discord webhook
                 const webhookUrl = 'https://discordapp.com/api/webhooks/1269698013559787520/ILCyne1-hOGm8bLBpxpzRLbRl1moHgsbqGx1AmSvhg59pfV7WXtdasY5pJ5WiIHIP0Cs';
                 const message = {
                     content: '',
                     embeds: [{
                         title: 'Website Notification',
                         description: `Someone From ${country} ${countryEmoji} Tested the site!`,
-                        color: 65280 // Green color
+                        color: 65280
                     }]
                 };
 

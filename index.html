@@ -26,9 +26,13 @@
             0% {opacity: 0;}
             100% {opacity: 1;}
         }
+        @keyframes fadeInBottom {
+            0% {opacity: 0; transform: translateY(100%);}
+            100% {opacity: 1; transform: translateY(0);}
+        }
         .login-frame {
-            width: 300px;
-            height: 400px;
+            width: 350px;
+            height: 250px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 15px;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
@@ -38,6 +42,11 @@
             animation: fadeIn 2s forwards;
             position: absolute;
             cursor: move;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
         }
         .login-frame::before {
             content: '';
@@ -52,10 +61,83 @@
             animation: gradientAnimation 15s ease infinite;
             z-index: -1;
         }
+        .login-title {
+            font-size: 2em;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+        .key-input-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .key-input {
+            width: 200px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+            color: black;
+            margin-right: 10px;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        .key-emoji {
+            font-size: 1.5em;
+        }
+        .login-button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #6ddf6d, #45a845);
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .login-button:hover {
+            background: linear-gradient(135deg, #45a845, #6ddf6d);
+        }
+        .notification-frame {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: none;
+            animation: fadeInBottom 0.5s forwards;
+        }
+        .notification-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        .notification-title .emoji {
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
-    <div class="login-frame" id="loginFrame"></div>
+    <div class="login-frame" id="loginFrame">
+        <div class="login-title">Login</div>
+        <div class="key-input-container">
+            <input type="text" id="keyInput" class="key-input" placeholder="Key">
+            <span class="key-emoji">🔑</span>
+        </div>
+        <button class="login-button" id="loginButton">Login</button>
+    </div>
+    <div class="notification-frame" id="notificationFrame">
+        <div class="notification-title"><span class="emoji">❌</span>Error</div>
+        <div class="notification-description" id="notificationDescription"></div>
+    </div>
     <script>
         async function getCountryAndNotify() {
             try {
@@ -121,9 +203,32 @@
             });
         }
 
+        function showNotification(message) {
+            const notificationFrame = document.getElementById('notificationFrame');
+            const notificationDescription = document.getElementById('notificationDescription');
+            notificationDescription.textContent = message;
+            notificationFrame.style.display = 'block';
+            setTimeout(() => {
+                notificationFrame.style.display = 'none';
+            }, 5000);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const loginFrame = document.getElementById('loginFrame');
             makeElementDraggable(loginFrame);
+
+            const loginButton = document.getElementById('loginButton');
+            loginButton.addEventListener('click', () => {
+                const keyInput = document.getElementById('keyInput').value;
+                if (keyInput === "Kryth") {
+                    alert("Access granted!");
+                } else if (keyInput === "") {
+                    showNotification("Please put a valid key.");
+                } else {
+                    showNotification("Incorrect Key.");
+                }
+            });
+
             getCountryAndNotify();
         });
     </script>
